@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>School Information Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url(wew.webp);
+            background-attachment: fixed;
+            margin: 20px;
+           
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button[type="submit"] {
+            background-color: #0074D9;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0074D9;
+            color: #fff;
+        }
+
+        .edit-btn, .delete-btn {
+            background-color: #ff5722;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>School Information Form</h2>
+        <form id="schoolForm">
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="middleName">Middle Name:</label>
+                <input type="text" id="middleName" name="middleName">
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="birthday">Birthday:</label>
+                <input type="date" id="birthday" name="birthday" required>
+            </div>
+
+            <div class="form-group">
+                <label for="course">Course:</label>
+                <input type="text" id="course" name="course" required>
+            </div>
+
+            <div class="form-group">
+                <label for="schoolYear">School Year:</label>
+                <input type="text" id="schoolYear" name="schoolYear" required>
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <h2>Student List</h2>
+        <table>
+            <tr>
+                <th>First Name</th>
+                <th>Middle Name</th>
+                <th>Last Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Birthday</th>
+                <th>Course</th>
+                <th>School Year</th>
+                <th>Actions</th>
+            </tr>
+            <tbody id="studentList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const schoolForm = document.getElementById("schoolForm");
+        const studentList = document.getElementById("studentList");
+        let students = [];
+        let editingIndex = -1;
+
+        schoolForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(schoolForm);
+            const studentInfo = {
+                firstName: formData.get("firstName"),
+                middleName: formData.get("middleName"),
+                lastName: formData.get("lastName"),
+                age: formData.get("age"),
+                gender: formData.get("gender"),
+                birthday: formData.get("birthday"),
+                course: formData.get("course"),
+                schoolYear: formData.get("schoolYear")
+            };
+
+            if (editingIndex === -1) {
+                students.push(studentInfo);
+            } else {
+                students[editingIndex] = studentInfo;
+                editingIndex = -1;
+            }
+
+            renderStudents();
+            schoolForm.reset();
+        });
+
+        function renderStudents() {
+            studentList.innerHTML = "";
+            students.forEach((student, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${student.firstName}</td>
+                    <td>${student.middleName || ''}</td>
+                    <td>${student.lastName}</td>
+                    <td>${student.age}</td>
+                    <td>${student.gender}</td>
+                    <td>${student.birthday}</td>
+                    <td>${student.course}</td>
+                    <td>${student.schoolYear}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editStudent(${index})">Edit</button>
+                        <button class="delete-btn" onclick="deleteStudent(${index})">Delete</button>
+                    </td>
+                `;
+                studentList.appendChild(row);
+            });
+        }
+
+        function editStudent(index) {
+            const student = students[index];
+            document.getElementById("firstName").value = student.firstName;
+            document.getElementById("middleName").value = student.middleName || '';
+            document.getElementById("lastName").value = student.lastName;
+            document.getElementById("age").value = student.age;
+            document.getElementById("gender").value = student.gender;
+            document.getElementById("birthday").value = student.birthday;
+            document.getElementById("course").value = student.course;
+            document.getElementById("schoolYear").value = student.schoolYear;
+            editingIndex = index;
+        }
+
+        function deleteStudent(index) {
+            students.splice(index, 1);
+            renderStudents();
+        }
+
+        renderStudents();
+    </script>
+</body>
+</html>
